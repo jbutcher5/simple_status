@@ -13,3 +13,7 @@ pub fn uptime(prefix: String, sys: &System) -> String {
 pub fn system_name(prefix: String, sys: &System) -> String {
     format!("{} {}", prefix, sys.name().unwrap())
 }
+
+pub fn kernel_version(prefix: String, sys: &System) -> String {
+    format!("{} {}", prefix, sys.os_version().unwrap())
+}
