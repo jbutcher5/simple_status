@@ -17,3 +17,21 @@ pub fn system_name(prefix: String, sys: &System) -> String {
 pub fn kernel_version(prefix: String, sys: &System) -> String {
     format!("{} {}", prefix, sys.os_version().unwrap())
 }
+
+pub fn os_version(prefix: String, sys: &System) -> String {
+    format!("{} {}", prefix, sys.os_version().unwrap())
+}
+
+pub fn host_name(prefix: String, sys: &System) -> String {
+    format!("{} {}", prefix, sys.host_name().unwrap())
+}
+
+pub fn memory_used(prefix: String, sys: &System) -> String {
+    let percentage = sys.used_memory() as f64/sys.total_memory() as f64;
+
+    format!("{} {:.4}%", prefix, percentage)
+}
+
+pub fn load(prefix: String, sys: &System) -> String {
+    format!("{} {}%", prefix, sys.load_average().one)
+}
