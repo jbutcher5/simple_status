@@ -1,29 +1,31 @@
-use std::ffi::CString;
 use std::ptr;
+use std::{ffi::CString, os::raw::c_ulong};
 use x11::xlib::*;
 
 pub struct Status {
     pub data: String,
     display: *mut Display,
+    window: c_ulong,
 }
 
 impl Status {
     pub fn new(data: String) -> Self {
+        let dis = unsafe { XOpenDisplay(ptr::null()) };
+        let win = unsafe { XDefaultRootWindow(dis) };
+
         Self {
             data,
-            display: unsafe { XOpenDisplay(ptr::null()) },
+            display: dis,
+            window: win,
         }
     }
 
     pub fn set_status(&self) {
         unsafe {
             let c_str = CString::new(self.data.as_str()).unwrap();
-            XStoreName(
-                self.display,
-                XDefaultRootWindow(self.display),
-                c_str.as_ptr() as *const i8,
-            );
-            XSync(self.display, 0_i32);
+            let str_ptr = c_str.as_ptr() as *const i8;
+            XStoreName(self.display, self.window, str_ptr);
+            XSync(self.display, 0);
         }
     }
 }
