@@ -1,7 +1,7 @@
 extern crate chrono;
 
 use chrono::prelude::*;
-use sysinfo::{System, SystemExt};
+use sysinfo::{ProcessorExt, System, SystemExt};
 
 pub trait StatusModules {
     fn uptime_string(&self) -> String;
@@ -9,6 +9,7 @@ pub trait StatusModules {
     fn memory_used(&self) -> String;
     fn load(&self) -> String;
     fn load_all(&self) -> String;
+    fn cpu(&self) -> String;
 }
 
 impl StatusModules for System {
@@ -40,5 +41,16 @@ impl StatusModules for System {
             self.load_average().five,
             self.load_average().fifteen,
         )
+    }
+
+    fn cpu(&self) -> String {
+        let cores = self.processors()
+            .iter()
+            .map(|x| x.cpu_usage());
+
+        let total = cores.clone().fold(0_f32, |acc, x| acc+x);
+        let avg = total/cores.len() as f32;
+
+        format!("{:.2}%", avg)
     }
 }

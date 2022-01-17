@@ -10,10 +10,11 @@ fn main() {
     let active_modules = [
         modules::StatusModules::time,
         modules::StatusModules::uptime_string,
+        modules::StatusModules::cpu,
         modules::StatusModules::memory_used,
     ];
 
-    let prefixes = ["Time -", "Uptime -", "Mem -"];
+    let prefixes = ["Time -", "Uptime -", "CPU -", "Mem -"];
     let seperator = "|";
 
     let mut x = status::Status::new(String::new());
