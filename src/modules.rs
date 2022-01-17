@@ -3,35 +3,42 @@ extern crate chrono;
 use chrono::prelude::*;
 use sysinfo::{System, SystemExt};
 
-pub fn uptime(prefix: String, sys: &System) -> String {
-    let naive = NaiveDateTime::from_timestamp(sys.uptime().try_into().unwrap(), 0);
-    let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
-
-    format!("{} {}", prefix, datetime.format("%H:%M:%S"))
+pub trait StatusModules {
+    fn uptime_string(&self) -> String;
+    fn time(&self) -> String;
+    fn memory_used(&self) -> String;
+    fn load(&self) -> String;
+    fn load_all(&self) -> String;
 }
 
-pub fn system_name(prefix: String, sys: &System) -> String {
-    format!("{} {}", prefix, sys.name().unwrap())
-}
+impl StatusModules for System {
+    fn uptime_string(&self) -> String {
+        let naive = NaiveDateTime::from_timestamp(self.uptime().try_into().unwrap(), 0);
+        let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
 
-pub fn kernel_version(prefix: String, sys: &System) -> String {
-    format!("{} {}", prefix, sys.os_version().unwrap())
-}
+        datetime.format("%H:%M:%S").to_string()
+    }
 
-pub fn os_version(prefix: String, sys: &System) -> String {
-    format!("{} {}", prefix, sys.os_version().unwrap())
-}
+    fn time(&self) -> String {
+        Local::now().format("%H:%M:%S").to_string()
+    }
 
-pub fn host_name(prefix: String, sys: &System) -> String {
-    format!("{} {}", prefix, sys.host_name().unwrap())
-}
+    fn memory_used(&self) -> String {
+        let percentage = (self.used_memory() as f64 / self.total_memory() as f64) * 100f64;
 
-pub fn memory_used(prefix: String, sys: &System) -> String {
-    let percentage = sys.used_memory() as f64/sys.total_memory() as f64;
+        format!("{:.1}%", percentage)
+    }
 
-    format!("{} {:.4}%", prefix, percentage)
-}
+    fn load(&self) -> String {
+        format!("{}", self.load_average().one)
+    }
 
-pub fn load(prefix: String, sys: &System) -> String {
-    format!("{} {}%", prefix, sys.load_average().one)
+    fn load_all(&self) -> String {
+        format!(
+            "{}, {}, {}",
+            self.load_average().one,
+            self.load_average().five,
+            self.load_average().fifteen,
+        )
+    }
 }
