@@ -21,9 +21,10 @@ impl Status {
     }
 
     pub fn set_status(&self) {
+        let c_str = CString::new(self.data.as_str()).unwrap();
+        let str_ptr = c_str.as_ptr() as *const i8;
+
         unsafe {
-            let c_str = CString::new(self.data.as_str()).unwrap();
-            let str_ptr = c_str.as_ptr() as *const i8;
             XStoreName(self.display, self.window, str_ptr);
             XSync(self.display, 0);
         }

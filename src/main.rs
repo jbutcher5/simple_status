@@ -1,22 +1,30 @@
 mod modules;
 mod status;
 
+use std::{thread, time};
 use sysinfo::{System, SystemExt};
 
 fn main() {
     let mut sys = System::new_all();
-    sys.refresh_all();
 
-    let active_modules = [modules::uptime, modules::system_name];
-    let prefixes = ["Uptime:", "OS:"];
+    let active_modules = [modules::uptime, modules::memory_used];
+    let prefixes = ["Uptime -", "Mem -"];
+    let seperator = "|";
 
-    let data: String = active_modules
-        .iter()
-        .zip(prefixes)
-        .fold(String::new(), |acc, x| {
-            format!("{} {}", acc, x.0(x.1.to_string(), &sys))
-        });
+    let mut x = status::Status::new(String::new());
 
-    let x = status::Status::new(data);
-    x.set_status();
+    loop {
+        sys.refresh_all();
+        let data: String = active_modules
+            .iter()
+            .zip(prefixes)
+            .fold(String::new(), |acc, x| {
+                format!("{} {} {}", acc, seperator, x.0(x.1.to_string(), &sys))
+            });
+
+        x.data = data;
+        x.set_status();
+
+        thread::sleep(time::Duration::from_millis(500));
+    }
 }
