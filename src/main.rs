@@ -7,7 +7,7 @@ use sysinfo::{System, SystemExt};
 use crate::modules::StatusModules;
 
 fn main() {
-    let mut sys = System::new_all();
+    let mut sys = System::new();
 
     let enabled_modules = ["load", "time", "uptime", "cpu", "mem"];
     let prefixes = ["Load -", "Time -", "Uptime -", "CPU -", "Mem -"];
@@ -16,7 +16,7 @@ fn main() {
     let mut x = status::Status::new(String::new());
 
     loop {
-        sys.refresh_all();
+        sys.dynamic_refresh(&enabled_modules);
         let data: String = enabled_modules
             .iter()
             .zip(prefixes)
