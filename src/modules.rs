@@ -5,6 +5,7 @@ use sysinfo::{ProcessorExt, System, SystemExt};
 
 pub trait StatusModules {
     fn translate(&self, module: &str) -> Option<String>;
+    fn dynamic_refresh(&mut self, modules: &[&str]);
 
     fn uptime_string(&self) -> String;
     fn time(&self) -> String;
@@ -27,6 +28,17 @@ impl StatusModules for System {
         };
 
         Some(result)
+    }
+
+    fn dynamic_refresh(&mut self, modules: &[&str]) {
+        let has = |x: &[&str], y: &[&str]| x.iter().any(|z| y.contains(z));
+
+        if has(modules, &["cpu"]){
+            self.refresh_cpu();
+        } if has(modules, &["mem"]) {
+            self.refresh_memory();
+        }
+
     }
 
     fn uptime_string(&self) -> String {
