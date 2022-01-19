@@ -10,8 +10,8 @@ fn main() {
     let mut sys = System::new();
 
     let enabled_modules = ["load", "time", "uptime", "cpu", "mem"];
-    let prefixes = ["Load -", "Time -", "Uptime -", "CPU -", "Mem -"];
-    let seperator = "|";
+    let prefixes = ["華", "", "", " ", " "];
+    let seperator = " ";
 
     let mut x = status::Status::new(String::new());
 
@@ -28,7 +28,7 @@ fn main() {
                     x.1,
                     sys.translate(x.0).unwrap_or(String::new())
                 )
-            });
+            })[seperator.len()+2..].to_string();
 
         x.data = data;
         x.set_status();
