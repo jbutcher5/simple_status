@@ -10,7 +10,7 @@ fn main() {
     let mut sys = System::new();
 
     let enabled_modules = ["load", "time", "uptime", "cpu", "mem"];
-    let prefixes = ["華", "", "", " ", " "];
+    let prefixes = ["華 ", " ", " ", " ", " "];
     let seperator = " ";
 
     let mut x = status::Status::new(String::new());
