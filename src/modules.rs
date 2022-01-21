@@ -4,8 +4,8 @@ use chrono::prelude::*;
 use sysinfo::{ProcessorExt, System, SystemExt};
 
 pub trait StatusModules {
-    fn translate(&self, module: &str) -> Option<String>;
-    fn dynamic_refresh(&mut self, modules: &[&str]);
+    fn translate(&self, module: String) -> Option<String>;
+    fn dynamic_refresh(&mut self, modules: &Vec<String>);
 
     fn uptime_string(&self) -> String;
     fn time(&self) -> String;
@@ -16,8 +16,8 @@ pub trait StatusModules {
 }
 
 impl StatusModules for System {
-    fn translate(&self, module: &str) -> Option<String> {
-        let result = match module {
+    fn translate(&self, module: String) -> Option<String> {
+        let result = match module.as_str() {
             "cpu" => self.cpu(),
             "mem" => self.memory_used(),
             "uptime" => self.uptime_string(),
@@ -30,8 +30,8 @@ impl StatusModules for System {
         Some(result)
     }
 
-    fn dynamic_refresh(&mut self, modules: &[&str]) {
-        let has = |x: &[&str], y: &[&str]| x.iter().any(|z| y.contains(z));
+    fn dynamic_refresh(&mut self, modules: &Vec<String>) {
+        let has = |x: &Vec<String>, y: &[&str]| x.iter().any(|z| y.contains(&z.as_str()));
 
         if has(modules, &["cpu"]){
             self.refresh_cpu();
