@@ -18,7 +18,7 @@ fn main() {
     let prefixes = config.prefixes;
     let seperator = config.seperator;
 
-    let mut x = status::Status::new(String::new());
+    let mut status_bar = status::Status::new(String::new());
 
     loop {
         sys.dynamic_refresh(&enabled_modules);
@@ -35,8 +35,8 @@ fn main() {
                 )
             })[seperator.len()+2..].to_string();
 
-        x.data = data;
-        x.set_status();
+        status_bar.data = data;
+        status_bar.set_status();
 
         thread::sleep(time::Duration::from_millis(500));
     }
