@@ -11,7 +11,7 @@ use crate::{config::StatusConfig, modules::StatusModules};
 fn main() {
     let mut sys = System::new();
 
-    let user_home = home::home_dir().unwrap().join(".config/simple_status/config.toml");
+    let user_home = home::home_dir().unwrap().join(".config/simple_status/config.yaml");
     let config = user_home.get_config();
 
     let enabled_modules = config.modules;
@@ -19,7 +19,6 @@ fn main() {
     let seperator = config.seperator;
 
     let status_bar = status::Status::new();
-
     loop {
         sys.dynamic_refresh(&enabled_modules);
         let data: String = enabled_modules
