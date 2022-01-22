@@ -1,3 +1,0 @@
-modules = ["load", "time", "uptime", "cpu", "mem"]
-prefixes = ["華 ", " ", " ", " ", " "]
-seperator = " "
