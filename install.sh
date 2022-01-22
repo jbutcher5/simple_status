@@ -1,3 +1,3 @@
 cargo install --path .
 mkdir -p ~/.config/simple_status
-cp config.toml ~/.config/simple_status/config.toml
+cp config.yaml ~/.config/simple_status/config.yaml
