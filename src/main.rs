@@ -3,7 +3,9 @@ mod modules;
 mod status;
 
 use home;
-use std::{thread, time};
+
+use std::time::Instant;
+
 use sysinfo::{System, SystemExt};
 
 use crate::{config::StatusConfig, modules::StatusModules};
@@ -21,6 +23,9 @@ fn main() {
     let seperator = config.seperator;
 
     let status_bar = status::Status::new();
+
+    let mut time_point: Option<Instant> = None;
+
     loop {
         let module_names: Vec<String> = config.module_names.clone();
         let module_commands: Vec<String> = config.module_commands.clone();
@@ -45,8 +50,9 @@ fn main() {
             })[seperator.len() + 2..]
             .to_string();
 
-        status_bar.set_status(data);
-
-        thread::sleep(time::Duration::from_millis(500));
+        if time_point.is_none() || time_point.unwrap().elapsed().as_millis() >= 500 {
+            status_bar.set_status(data);
+            time_point = Some(Instant::now());
+        }
     }
 }
