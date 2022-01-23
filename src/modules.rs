@@ -1,10 +1,44 @@
 extern crate chrono;
 
+use std::process::Command;
+
 use chrono::prelude::*;
 use sysinfo::{ProcessorExt, System, SystemExt};
 
+pub struct Module {
+    pub name: String,
+    pub command: String,
+}
+
+impl Module {
+    fn new(name: String, command: String) -> Self {
+        Self { name, command }
+    }
+
+    fn stdout(&self) -> String {
+        let seperate = self.command.split(" ").collect::<Vec<&str>>();
+
+        String::from_utf8(
+            Command::new(seperate[0])
+                .args(&seperate[1..])
+                .output()
+                .unwrap()
+                .stdout,
+        )
+        .unwrap()
+        .replace("\n", "")
+        .trim()
+        .to_string()
+    }
+}
+
 pub trait StatusModules {
-    fn translate(&self, module: String) -> Option<String>;
+    fn translate(
+        &self,
+        module: String,
+        names: Vec<String>,
+        commands: Vec<String>,
+    ) -> Option<String>;
     fn dynamic_refresh(&mut self, modules: &Vec<String>);
 
     fn uptime_string(&self) -> String;
@@ -16,15 +50,30 @@ pub trait StatusModules {
 }
 
 impl StatusModules for System {
-    fn translate(&self, module: String) -> Option<String> {
-        let result = match module.as_str() {
-            "cpu" => self.cpu(),
-            "mem" => self.memory_used(),
-            "uptime" => self.uptime_string(),
-            "time" => self.time(),
-            "load" => self.load(),
-            "load_all" => self.load_all(),
-            _ => return None,
+    fn translate(
+        &self,
+        module: String,
+        names: Vec<String>,
+        commands: Vec<String>,
+    ) -> Option<String> {
+        let modules = names
+            .iter()
+            .zip(commands)
+            .map(|x| Module::new(x.0.to_owned(), x.1))
+            .filter(|x| x.name == module)
+            .next();
+
+        let result = match modules {
+            Some(_) => modules.unwrap().stdout(),
+            None => match module.as_str() {
+                "cpu" => self.cpu(),
+                "mem" => self.memory_used(),
+                "uptime" => self.uptime_string(),
+                "time" => self.time(),
+                "load" => self.load(),
+                "load_all" => self.load_all(),
+                _ => return None,
+            },
         };
 
         Some(result)
@@ -33,12 +82,12 @@ impl StatusModules for System {
     fn dynamic_refresh(&mut self, modules: &Vec<String>) {
         let has = |x: &Vec<String>, y: &[&str]| x.iter().any(|z| y.contains(&z.as_str()));
 
-        if has(modules, &["cpu"]){
+        if has(modules, &["cpu"]) {
             self.refresh_cpu();
-        } if has(modules, &["mem"]) {
+        }
+        if has(modules, &["mem"]) {
             self.refresh_memory();
         }
-
     }
 
     fn uptime_string(&self) -> String {

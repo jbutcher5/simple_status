@@ -1,15 +1,15 @@
-use std::path::PathBuf;
-use std::fs;
-use serde_yaml;
 use serde_derive::Deserialize;
+use serde_yaml;
+use std::fs;
+use std::path::PathBuf;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub modules: Vec<String>,
     pub prefixes: Vec<String>,
     pub seperator: String,
-    pub module_names: Option<Vec<String>>,
-    pub module_commands: Option<Vec<String>>
+    pub module_names: Vec<String>,
+    pub module_commands: Vec<String>,
 }
 
 pub trait StatusConfig {
