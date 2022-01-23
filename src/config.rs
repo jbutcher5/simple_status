@@ -7,7 +7,9 @@ use serde_derive::Deserialize;
 pub struct Config {
     pub modules: Vec<String>,
     pub prefixes: Vec<String>,
-    pub seperator: String
+    pub seperator: String,
+    pub module_names: Option<Vec<String>>,
+    pub module_commands: Option<Vec<String>>
 }
 
 pub trait StatusConfig {
