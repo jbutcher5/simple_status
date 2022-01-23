@@ -4,7 +4,7 @@ mod status;
 
 use home;
 
-use std::time::Instant;
+use std::{thread, time::{Instant, Duration}};
 
 use sysinfo::{System, SystemExt};
 
@@ -55,5 +55,7 @@ fn main() {
             status_bar.set_status(data);
             time_point = Some(Instant::now());
         }
+
+        thread::sleep(Duration::from_millis(1));
     }
 }
