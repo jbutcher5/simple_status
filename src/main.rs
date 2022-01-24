@@ -18,38 +18,30 @@ fn main() {
         .join(".config/simple_status/config.yaml");
     let config = user_home.get_config();
 
-    let enabled_modules = config.modules;
-    let prefixes = config.prefixes;
-    let seperator = config.seperator;
-
     let status_bar = status::Status::new();
-
     let mut time_point: Option<Instant> = None;
 
     loop {
         if time_point.is_none() || time_point.unwrap().elapsed().as_millis() >= 500 {
-            let module_names: Vec<String> = config.module_names.clone();
-            let module_commands: Vec<String> = config.module_commands.clone();
-
-            sys.dynamic_refresh(&enabled_modules);
+            sys.dynamic_refresh(&config.modules);
             let data: String =
-                enabled_modules
+                config.modules
                     .iter()
-                    .zip(&prefixes)
+                    .zip(&config.prefixes)
                     .fold(String::new(), |acc, x| {
                         format!(
                             "{} {} {} {}",
                             acc,
-                            seperator,
+                            config.seperator,
                             x.1,
                             sys.translate(
                                 x.0.to_owned(),
-                                module_names.clone(),
-                                module_commands.clone()
+                                config.module_names.clone(),
+                                config.module_commands.clone()
                             )
                             .unwrap()
                         )
-                    })[seperator.len() + 2..]
+                    })[config.seperator.len() + 2..]
                     .to_string();
 
             status_bar.set_status(data);
