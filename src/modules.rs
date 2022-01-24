@@ -59,7 +59,7 @@ impl StatusModules for System {
         let modules = names
             .iter()
             .zip(commands)
-            .map(|x| Module::new(x.0.to_owned(), x.1))
+            .map(|x| -> Module {Module::new(x.0.to_owned(), x.1.to_string())})
             .filter(|x| x.name == module)
             .next();
 
