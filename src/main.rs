@@ -4,8 +4,11 @@ mod status;
 
 use home;
 
-use std::{thread, time::{Instant, Duration}};
-
+use rayon::prelude::*;
+use std::{
+    thread,
+    time::{Duration, Instant},
+};
 use sysinfo::{System, SystemExt};
 
 use crate::{config::StatusConfig, modules::StatusModules};
@@ -24,25 +27,28 @@ fn main() {
     loop {
         if time_point.is_none() || time_point.unwrap().elapsed().as_millis() >= 500 {
             sys.dynamic_refresh(&config.modules);
-            let data: String =
-                config.modules
-                    .iter()
-                    .zip(&config.prefixes)
-                    .fold(String::new(), |acc, x| {
-                        format!(
-                            "{} {} {} {}",
-                            acc,
-                            config.seperator,
-                            x.1,
-                            sys.translate(
-                                x.0.to_owned(),
-                                config.module_names.clone(),
-                                config.module_commands.clone()
-                            )
-                            .unwrap()
-                        )
-                    })[config.seperator.len() + 2..]
-                    .to_string();
+
+            let results: Vec<String> = config
+                .modules
+                .par_iter()
+                .map(|x| {
+                    sys.translate(
+                        x.to_string(),
+                        config.module_names.clone(),
+                        config.module_commands.clone(),
+                    )
+                    .unwrap_or_default()
+                })
+                .collect();
+
+            let data: String = config
+                .prefixes
+                .iter()
+                .zip(&results)
+                .fold(String::new(), |acc, x| {
+                    format!("{} {} {} {}", acc, config.seperator, x.0, x.1)
+                })[config.seperator.len() + 2..]
+                .to_string();
 
             status_bar.set_status(data);
             time_point = Some(Instant::now());
