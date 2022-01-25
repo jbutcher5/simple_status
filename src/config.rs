@@ -1,5 +1,5 @@
 use serde_derive::Deserialize;
-use serde_yaml;
+use toml;
 use std::fs;
 use std::path::PathBuf;
 
@@ -21,7 +21,7 @@ impl StatusConfig for PathBuf {
         let content = fs::read_to_string(self.as_path().to_str().unwrap())
             .expect("Something went wrong reading the config file.");
 
-        let result: Config = serde_yaml::from_str(content.as_str()).unwrap();
+        let result: Config = toml::from_str(content.as_str()).unwrap();
         result
     }
 }
