@@ -1,70 +1,28 @@
 extern crate chrono;
 
-use std::process::Command;
-
 use chrono::prelude::*;
 use sysinfo::{ProcessorExt, System, SystemExt};
 
-pub struct Module {
-    pub name: String,
-    pub command: String,
+use crate::config::Config;
+
+pub struct ModuleData {
+    config: Config,
+    sys: System,
 }
 
-impl Module {
-    fn new(name: String, command: String) -> Self {
-        Self { name, command }
+impl ModuleData {
+    pub fn new(config: Config) -> Self {
+        Self {
+            config,
+            sys: System::new(),
+        }
     }
 
-    fn stdout(&self) -> String {
-        let seperate = self.command.split(" ").collect::<Vec<&str>>();
+    pub fn translate(&self, module: String) -> Option<String> {
+        let module_data = &self.config.module[&module];
 
-        String::from_utf8(
-            Command::new(seperate[0])
-                .args(&seperate[1..])
-                .output()
-                .unwrap()
-                .stdout,
-        )
-        .unwrap()
-        .replace("\n", "")
-        .trim()
-        .to_string()
-    }
-}
-
-pub trait StatusModules {
-    fn translate(
-        &self,
-        module: String,
-        names: Vec<String>,
-        commands: Vec<String>,
-    ) -> Option<String>;
-    fn dynamic_refresh(&mut self, modules: &Vec<String>);
-
-    fn uptime_string(&self) -> String;
-    fn time(&self) -> String;
-    fn memory_used(&self) -> String;
-    fn load(&self) -> String;
-    fn load_all(&self) -> String;
-    fn cpu(&self) -> String;
-}
-
-impl StatusModules for System {
-    fn translate(
-        &self,
-        module: String,
-        names: Vec<String>,
-        commands: Vec<String>,
-    ) -> Option<String> {
-        let modules = names
-            .iter()
-            .zip(commands)
-            .map(|x| -> Module {Module::new(x.0.to_owned(), x.1.to_string())})
-            .filter(|x| x.name == module)
-            .next();
-
-        let result = match modules {
-            Some(_) => modules.unwrap().stdout(),
+        let result = match module_data.command {
+            Some(_) => module_data.stdout(),
             None => match module.as_str() {
                 "cpu" => self.cpu(),
                 "mem" => self.memory_used(),
@@ -76,22 +34,22 @@ impl StatusModules for System {
             },
         };
 
-        Some(result)
+        Some(format!("{} {}", module_data.prefix, result))
     }
 
-    fn dynamic_refresh(&mut self, modules: &Vec<String>) {
+    pub fn dynamic_refresh(&mut self) {
         let has = |x: &Vec<String>, y: &[&str]| x.iter().any(|z| y.contains(&z.as_str()));
 
-        if has(modules, &["cpu"]) {
-            self.refresh_cpu();
+        if has(&self.config.modules, &["cpu"]) {
+            self.sys.refresh_cpu();
         }
-        if has(modules, &["mem"]) {
-            self.refresh_memory();
+        if has(&self.config.modules, &["mem"]) {
+            self.sys.refresh_memory();
         }
     }
 
     fn uptime_string(&self) -> String {
-        let naive = NaiveDateTime::from_timestamp(self.uptime().try_into().unwrap(), 0);
+        let naive = NaiveDateTime::from_timestamp(self.sys.uptime().try_into().unwrap(), 0);
         let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
 
         datetime.format("%H:%M:%S").to_string()
@@ -102,26 +60,26 @@ impl StatusModules for System {
     }
 
     fn memory_used(&self) -> String {
-        let percentage = (self.used_memory() as f64 / self.total_memory() as f64) * 100f64;
+        let percentage = (self.sys.used_memory() as f64 / self.sys.total_memory() as f64) * 100f64;
 
         format!("{:.2}%", percentage)
     }
 
     fn load(&self) -> String {
-        format!("{}", self.load_average().one)
+        format!("{}", self.sys.load_average().one)
     }
 
     fn load_all(&self) -> String {
         format!(
             "{}, {}, {}",
             self.load(),
-            self.load_average().five,
-            self.load_average().fifteen,
+            self.sys.load_average().five,
+            self.sys.load_average().fifteen,
         )
     }
 
     fn cpu(&self) -> String {
-        let cores = self.processors().iter().map(|x| x.cpu_usage());
+        let cores = self.sys.processors().iter().map(|x| x.cpu_usage());
 
         let total = cores.clone().fold(0_f32, |acc, x| acc + x);
         let avg = total / cores.len() as f32;
