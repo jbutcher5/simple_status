@@ -1,12 +1,6 @@
 use serde_derive::Deserialize;
-use toml;
 
-use std::{
-    collections::HashMap,
-    fs,
-    path::PathBuf,
-    process::Command
-};
+use std::{collections::HashMap, fs, path::PathBuf, process::Command};
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct Config {
@@ -57,7 +51,6 @@ impl StatusConfig for PathBuf {
         let content = fs::read_to_string(self.as_path().to_str().unwrap())
             .expect("Something went wrong reading the config file.");
 
-        let result: Config = toml::from_str(content.as_str()).unwrap();
-        result
+        toml::from_str(content.as_str()).unwrap()
     }
 }
