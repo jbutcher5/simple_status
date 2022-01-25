@@ -15,7 +15,7 @@ fn main() {
 
     let user_home = home::home_dir()
         .unwrap()
-        .join(".config/simple_status/config.yaml");
+        .join(".config/simple_status/config.toml");
     let config = user_home.get_config();
 
     let status_bar = status::Status::new();
