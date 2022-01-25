@@ -1,15 +1,20 @@
 use serde_derive::Deserialize;
 use toml;
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub modules: Vec<String>,
-    pub prefixes: Vec<String>,
     pub seperator: String,
-    pub module_names: Vec<String>,
-    pub module_commands: Vec<String>,
+    pub module: HashMap<String, Module>
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Module {
+    pub command: Option<String>,
+    pub prefix: String
 }
 
 pub trait StatusConfig {
