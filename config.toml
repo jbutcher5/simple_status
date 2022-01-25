@@ -1,5 +1,21 @@
 modules = ["kernel", "load", "time", "uptime", "cpu", "mem"]
-prefixes = [" ", "華 ", " ", " ", " ", " "]
 seperator = " "
-module_names = ["kernel"]
-module_commands = ["uname -r"]
+
+[module."kernel"]
+prefix = " "
+command = "uname -r"
+
+[module."load"]
+prefix = "華 "
+
+[module."time"]
+prefix = " "
+
+[module."uptime"]
+prefix = " "
+
+[module."cpu"]
+prefix = " "
+
+[module."mem"]
+prefix = " "
