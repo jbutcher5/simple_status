@@ -1,6 +1,6 @@
 [package]
 name = "simple_status"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 
 [dependencies]
@@ -9,5 +9,6 @@ chrono = "0.4.19"
 sysinfo = "0.22.5"
 serde = "1.0.133"
 serde_derive = "1.0.133"
-serde_yaml = "0.8.23"
 home = "0.5.3"
+rayon = "1.5.1"
+toml = "0.5.8"
