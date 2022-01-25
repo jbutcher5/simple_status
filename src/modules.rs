@@ -1,6 +1,7 @@
 extern crate chrono;
 
 use chrono::prelude::*;
+use rayon::prelude::*;
 use sysinfo::{ProcessorExt, System, SystemExt};
 
 use crate::config::Config;
@@ -18,7 +19,23 @@ impl ModuleData {
         }
     }
 
-    pub fn translate(&self, module: String) -> Option<String> {
+    pub fn get_bar(&self) -> String {
+        self.dynamic_refresh();
+
+        let results: Vec<String> = self
+            .config
+            .modules
+            .par_iter()
+            .map(|x| -> String { self.translate(x.to_string()).unwrap_or_default() })
+            .collect();
+
+        results.iter().fold(String::new(), |acc, x| {
+            format!("{} {} {}", acc, &self.config.seperator, x)
+        })[self.config.seperator.len() + 2..]
+            .to_string()
+    }
+
+    fn translate(&self, module: String) -> Option<String> {
         let module_data = &self.config.module[&module];
 
         let result = match module_data.command {
@@ -37,7 +54,7 @@ impl ModuleData {
         Some(format!("{} {}", module_data.prefix, result))
     }
 
-    pub fn dynamic_refresh(&mut self) {
+    fn dynamic_refresh(&mut self) {
         let has = |x: &Vec<String>, y: &[&str]| x.iter().any(|z| y.contains(&z.as_str()));
 
         if has(&self.config.modules, &["cpu"]) {
