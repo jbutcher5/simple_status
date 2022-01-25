@@ -2,22 +2,15 @@ mod config;
 mod modules;
 mod status;
 
-use home;
-
 use std::{
     thread,
     time::{Duration, Instant},
 };
 
-use crate::{config::StatusConfig, modules::ModuleData};
+use crate::modules::ModuleData;
 
 fn main() {
-    let user_home = home::home_dir()
-        .unwrap()
-        .join(".config/simple_status/config.toml");
-    let config = user_home.get_config();
-
-    let module_data = ModuleData::new(config.clone());
+    let module_data = ModuleData::new(".config/simple_status/config.toml");
 
     let status_bar = status::Status::new();
     let mut time_point: Option<Instant> = None;

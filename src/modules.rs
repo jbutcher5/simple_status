@@ -1,10 +1,12 @@
 extern crate chrono;
 
+use home;
+
 use chrono::prelude::*;
 use rayon::prelude::*;
 use sysinfo::{ProcessorExt, System, SystemExt};
 
-use crate::config::Config;
+use crate::config::{Config, StatusConfig};
 
 pub struct ModuleData {
     config: Config,
@@ -12,14 +14,17 @@ pub struct ModuleData {
 }
 
 impl ModuleData {
-    pub fn new(config: Config) -> Self {
+    pub fn new(config_path: &str) -> Self {
+        let config_file = home::home_dir().unwrap().join(config_path);
+        let config = config_file.get_config();
+
         Self {
             config,
             sys: System::new(),
         }
     }
 
-    pub fn get_bar(&self) -> String {
+    pub fn get_bar(&mut self) -> String {
         self.dynamic_refresh();
 
         let results: Vec<String> = self
