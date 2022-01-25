@@ -10,7 +10,7 @@ use std::{
 use crate::modules::ModuleData;
 
 fn main() {
-    let module_data = ModuleData::new(".config/simple_status/config.toml");
+    let mut module_data = ModuleData::new(".config/simple_status/config.toml");
 
     let status_bar = status::Status::new();
     let mut time_point: Option<Instant> = None;
