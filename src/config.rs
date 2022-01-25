@@ -1,32 +1,38 @@
 use serde_derive::Deserialize;
 use toml;
 
-use std::process::Command;
-use std::collections::HashMap;
-use std::fs;
-use std::path::PathBuf;
+use std::{
+    collections::HashMap,
+    fs,
+    path::PathBuf,
+    process::Command
+};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Config {
     pub modules: Vec<String>,
     pub seperator: String,
-    pub module: HashMap<String, Module>
+    pub module: HashMap<String, Module>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Module {
     pub command: Option<String>,
-    pub prefix: String
+    pub prefix: String,
 }
 
 impl Module {
-    fn stdout(&self) -> String {
-
+    pub fn stdout(&self) -> String {
         if self.command.is_none() {
             return String::new();
         }
 
-        let seperate = self.command.unwrap().split(" ").collect::<Vec<&str>>();
+        let seperate = self
+            .command
+            .as_ref()
+            .unwrap()
+            .split(" ")
+            .collect::<Vec<&str>>();
 
         String::from_utf8(
             Command::new(seperate[0])
