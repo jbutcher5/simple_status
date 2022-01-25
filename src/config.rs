@@ -25,7 +25,7 @@ impl Module {
             .command
             .as_ref()
             .unwrap()
-            .split(" ")
+            .split(' ')
             .collect::<Vec<&str>>();
 
         String::from_utf8(
@@ -36,7 +36,7 @@ impl Module {
                 .stdout,
         )
         .unwrap()
-        .replace("\n", "")
+        .replace('\n', "")
         .trim()
         .to_string()
     }
