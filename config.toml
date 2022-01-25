@@ -1,0 +1,5 @@
+modules = ["kernel", "load", "time", "uptime", "cpu", "mem"]
+prefixes = [" ", "華 ", " ", " ", " ", " "]
+seperator = " "
+module_names = ["kernel"]
+module_commands = ["uname -r"]
