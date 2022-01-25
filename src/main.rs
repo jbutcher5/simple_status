@@ -5,10 +5,7 @@ mod status;
 use home;
 
 use rayon::prelude::*;
-use std::{
-    thread,
-    time::{Duration, Instant},
-};
+use std::{thread, time::{Duration, Instant}};
 use sysinfo::{System, SystemExt};
 
 use crate::{config::StatusConfig, modules::StatusModules};
@@ -31,7 +28,7 @@ fn main() {
             let results: Vec<String> = config
                 .modules
                 .par_iter()
-                .map(|x| {
+                .map(|x| -> String {
                     sys.translate(
                         x.to_string(),
                         config.module_names.clone(),
