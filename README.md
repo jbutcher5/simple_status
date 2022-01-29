@@ -27,7 +27,7 @@ The default configuration can be found at `~/config.toml`.
 
 Modules can either define a command to be executed and you the output as return value from the module or configure a built-in module.
 
-Each module defined (even built-in modules must be defined) must satisfy a `prefix` and `modules` and `seperator` .
+The config file must satisfy a `modules` and `seperator`.
 
 ``` toml
 modules = ["time"]

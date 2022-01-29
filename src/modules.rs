@@ -79,7 +79,10 @@ impl ModuleData {
             return None;
         }
 
-        Some(format!("{} {}", module_data.prefix, result?))
+        match module_data.prefix {
+            Some(_) => Some(format!("{} {}", module_data.prefix.as_ref()?, result?)),
+            _ => Some(result?),
+        }
     }
 
     fn dynamic_refresh(&mut self) {
@@ -108,10 +111,15 @@ impl ModuleData {
             "1" => "st",
             "2" => "nd",
             "3" => "rd",
-            _ => "th"
+            _ => "th",
         };
 
-        format!("{}{} {}", day_num, suffix, local.format("%b %y").to_string())
+        format!(
+            "{}{} {}",
+            day_num,
+            suffix,
+            local.format("%b %y").to_string()
+        )
     }
 
     fn time(&self) -> String {

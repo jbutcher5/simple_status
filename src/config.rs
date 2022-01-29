@@ -12,7 +12,7 @@ pub struct Config {
 #[derive(Deserialize, Clone, Debug)]
 pub struct Module {
     pub command: Option<String>,
-    pub prefix: String,
+    pub prefix: Option<String>,
 }
 
 impl Module {
