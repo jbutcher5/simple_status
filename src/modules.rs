@@ -1,7 +1,5 @@
 extern crate chrono;
 
-use home;
-
 use chrono::prelude::*;
 use rayon::prelude::*;
 use sysinfo::{ProcessorExt, System, SystemExt};
@@ -25,38 +23,68 @@ impl ModuleData {
     }
 
     pub fn get_bar(&mut self) -> String {
+        // Return the status bar as a string to be used by Status
+
+        // Refresh all built-in modules that are used and require a refesh
         self.dynamic_refresh();
 
-        let results: Vec<String> = self
+        // Thread the map statement on each item in the iterable
+        let results: Vec<Option<String>> = self
             .config
             .modules
             .par_iter()
-            .map(|x| -> String { self.translate(x.to_string()).unwrap_or_default() })
+            .map(|x| -> Option<String> { self.translate(x.to_string()) })
             .collect();
 
-        results.iter().fold(String::new(), |acc, x| {
-            format!("{} {} {}", acc, &self.config.seperator, x)
-        })[self.config.seperator.len() + 2..]
+        let clean_results: Vec<String> = results
+            .iter()
+            .filter(|x| !x.is_none())
+            .cloned()
+            .map(|x| x.unwrap())
+            .collect();
+
+        // Collect all results with a fold
+        clean_results
+            .iter()
+            .fold(String::new(), |acc, x| {
+                format!("{} {} {}", acc, &self.config.seperator, x)
+            })
+            .trim()
             .to_string()
     }
 
     fn translate(&self, module: String) -> Option<String> {
+        // Take a string from modules in the config file and find
+        // the function that is referring to, be it a command or
+        // command to be run.
+        // TODO: Check if module is denfined self.config.module keys.
+
         let module_data = &self.config.module[&module];
 
-        let result = match module_data.command {
+        let potential_built_in: &str = module_data.built_in.as_ref().unwrap_or(&module);
+
+        let result: Option<String> = match module_data.command {
             Some(_) => module_data.stdout(),
-            None => match module.as_str() {
+            None => Some(match potential_built_in {
                 "cpu" => self.cpu(),
                 "mem" => self.memory_used(),
                 "uptime" => self.uptime_string(),
+                "date" => self.date(),
                 "time" => self.time(),
                 "load" => self.load(),
                 "load_all" => self.load_all(),
                 _ => return None,
-            },
+            }),
         };
 
-        Some(format!("{} {}", module_data.prefix, result))
+        if result.is_none() || result.as_ref()?.is_empty() {
+            return None;
+        }
+
+        match module_data.prefix {
+            Some(_) => Some(format!("{} {}", module_data.prefix.as_ref()?, result?)),
+            _ => Some(result?),
+        }
     }
 
     fn dynamic_refresh(&mut self) {
@@ -75,6 +103,20 @@ impl ModuleData {
         let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
 
         datetime.format("%H:%M:%S").to_string()
+    }
+
+    fn date(&self) -> String {
+        let local = Local::now();
+
+        let day_num = local.format("%d").to_string();
+        let suffix = match day_num.as_str() {
+            "1" => "st",
+            "2" => "nd",
+            "3" => "rd",
+            _ => "th",
+        };
+
+        format!("{}{} {}", day_num, suffix, local.format("%b %y"))
     }
 
     fn time(&self) -> String {

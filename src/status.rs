@@ -9,6 +9,7 @@ pub struct Status {
 
 impl Status {
     pub fn new() -> Self {
+        // Setup connection to display
         let dis = unsafe { XOpenDisplay(ptr::null()) };
         let win = unsafe { XDefaultRootWindow(dis) };
 
@@ -19,6 +20,7 @@ impl Status {
     }
 
     pub fn set_status(&self, data: String) {
+        // Create a C char pointer array from data and update the status
         let c_str = CString::new(data.as_str()).unwrap();
         let str_ptr = c_str.as_ptr() as *const i8;
 

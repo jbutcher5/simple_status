@@ -12,33 +12,36 @@ pub struct Config {
 #[derive(Deserialize, Clone, Debug)]
 pub struct Module {
     pub command: Option<String>,
-    pub prefix: String,
+    pub built_in: Option<String>,
+    pub prefix: Option<String>,
 }
 
 impl Module {
-    pub fn stdout(&self) -> String {
-        if self.command.is_none() {
-            return String::new();
-        }
-
-        let seperate = self
-            .command
-            .as_ref()
-            .unwrap()
-            .split(' ')
-            .collect::<Vec<&str>>();
-
-        String::from_utf8(
-            Command::new(seperate[0])
-                .args(&seperate[1..])
-                .output()
+    pub fn stdout(&self) -> Option<String> {
+        let seperate = match self.command {
+            Some(_) => self
+                .command
+                .as_ref()
                 .unwrap()
-                .stdout,
+                .split(' ')
+                .collect::<Vec<&str>>(),
+            _ => return None,
+        };
+
+        let command = Command::new(seperate[0]).args(&seperate[1..]).output();
+
+        let stdout = match command {
+            Ok(_) => command.unwrap().stdout,
+            _ => return None,
+        };
+
+        Some(
+            String::from_utf8(stdout)
+                .unwrap()
+                .replace('\n', "")
+                .trim()
+                .to_string(),
         )
-        .unwrap()
-        .replace('\n', "")
-        .trim()
-        .to_string()
     }
 }
 
