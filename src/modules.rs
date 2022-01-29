@@ -57,6 +57,7 @@ impl ModuleData {
                 "cpu" => self.cpu(),
                 "mem" => self.memory_used(),
                 "uptime" => self.uptime_string(),
+                "date" => self.date(),
                 "time" => self.time(),
                 "load" => self.load(),
                 "load_all" => self.load_all(),
@@ -87,6 +88,20 @@ impl ModuleData {
         let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
 
         datetime.format("%H:%M:%S").to_string()
+    }
+
+    fn date(&self) -> String {
+        let local = Local::now();
+
+        let day_num = local.format("%d").to_string();
+        let suffix = match day_num.as_str() {
+            "1" => "st",
+            "2" => "nd",
+            "3" => "rd",
+            _ => "th"
+        };
+
+        format!("{}{} {}", day_num, suffix, local.format("%b %y").to_string())
     }
 
     fn time(&self) -> String {
