@@ -23,8 +23,12 @@ impl ModuleData {
     }
 
     pub fn get_bar(&mut self) -> String {
+        // Return the status bar as a string to be used by Status
+
+        // Refresh all built-in modules that are used and require a refesh
         self.dynamic_refresh();
 
+        // Thread the map statement on each item in the iterable
         let results: Vec<Option<String>> = self
             .config
             .modules
@@ -39,6 +43,7 @@ impl ModuleData {
             .map(|x| x.unwrap())
             .collect();
 
+        // Collect all results with a fold
         clean_results
             .iter()
             .fold(String::new(), |acc, x| {
@@ -49,6 +54,9 @@ impl ModuleData {
     }
 
     fn translate(&self, module: String) -> Option<String> {
+        // Take a string from modules in the config file and find
+        // the function that is referring to, be it a command or
+        // command to be run.
         // TODO: Check if module is denfined self.config.module keys.
 
         let module_data = &self.config.module[&module];
