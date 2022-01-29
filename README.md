@@ -58,3 +58,13 @@ modules = ["kernel"]
 prefix = "Kernel: "
 command = "uname -r"
 ```
+
+## Under the hood
+
+All simple_status is doing effectivley is `xsetroot -name <output>` with the output being the infomation generated from the config file.
+
+### xlib
+
+In `~/src/status.rs` simple_status has to do some calling of the X11 C API xlib. Due to Rust not being able to know if this could could be safe or unsafe all calls to see functions must be wrapped with an `unsafe` scope. For the most part this should be completely safe. X11 has been out for a long time now (you could see this as a negative or a positive) and any issues have likely been ironed out.
+
+Using xlib does how ever mean at compile-time it must be linked to the X11 library, this can be seen in `~/build.rs` and is why `libX11` is required.
