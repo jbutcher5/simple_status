@@ -39,9 +39,12 @@ impl ModuleData {
             .map(|x| x.unwrap())
             .collect();
 
-        clean_results.iter().fold(String::new(), |acc, x| {
-            format!("{} {} {}", acc, &self.config.seperator, x)
-        })[self.config.seperator.len() + 2..]
+        clean_results
+            .iter()
+            .fold(String::new(), |acc, x| {
+                format!("{} {} {}", acc, &self.config.seperator, x)
+            })
+            .trim()
             .to_string()
     }
 
