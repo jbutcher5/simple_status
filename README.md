@@ -30,11 +30,12 @@ Modules can either define a command to be executed and you the output as return 
 The config file must satisfy a `modules` and `seperator`.
 
 ``` toml
-modules = ["time"]
+modules = ["clock"]
 seperator = "|"
 
-[module."time"]
+[module."clock"]
 prefix = "Time: "
+built_in = "time"
 ```
 
 ### Built-in Modules
@@ -49,7 +50,7 @@ prefix = "Time: "
 
 ### Command Modules
 
-To create a command module all that needs to be defined is a module with a command.
+To create a command module all that needs to be defined is a module with a command. A `built_in` should be defined, however the result would likely not result in an error and would be ignored.
 
 ``` toml
 modules = ["kernel"]
