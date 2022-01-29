@@ -1,6 +1,6 @@
 # Simple Status
 
-Easy, Simple, Clean. Making status bars reliable and up-to-date.
+Easy, Simple, Clean. Making status bars reliable and up-to-date. This project was inspired by [dwmblocks](https://github.com/torrinfail/dwmblocks) but is a Rust alternative with a toml congiguration file.
 
 ## Installation
 
