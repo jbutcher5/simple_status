@@ -51,7 +51,7 @@ fn args() -> ArgMatches {
     return App::new("simple_status")
         .version(env!("CARGO_PKG_VERSION"))
         .author("James Butcher <jamesbutcher167@gmail.com>")
-        .about("Easy, Simple, Clean. A dwm modular config bar. Inspired by dwmblocks")
+        .about("Easy, Simple, Clean. A dwm modular config bar. Inspired by dwmblocks.")
         .arg(
             Arg::new("CONFIG")
                 .short('c')
