@@ -27,14 +27,21 @@ impl ModuleData {
     pub fn get_bar(&mut self) -> String {
         self.dynamic_refresh();
 
-        let results: Vec<String> = self
+        let results: Vec<Option<String>> = self
             .config
             .modules
             .par_iter()
-            .map(|x| -> String { self.translate(x.to_string()).unwrap_or_default() })
+            .map(|x| -> Option<String> { self.translate(x.to_string()) })
             .collect();
 
-        results.iter().fold(String::new(), |acc, x| {
+        let clean_results: Vec<String> = results
+            .iter()
+            .filter(|x| !x.is_none())
+            .cloned()
+            .map(|x| x.unwrap())
+            .collect();
+
+        clean_results.iter().fold(String::new(), |acc, x| {
             format!("{} {} {}", acc, &self.config.seperator, x)
         })[self.config.seperator.len() + 2..]
             .to_string()
@@ -43,7 +50,7 @@ impl ModuleData {
     fn translate(&self, module: String) -> Option<String> {
         let module_data = &self.config.module[&module];
 
-        let result = match module_data.command {
+        let result: String = match module_data.command {
             Some(_) => module_data.stdout(),
             None => match module.as_str() {
                 "cpu" => self.cpu(),
@@ -55,6 +62,10 @@ impl ModuleData {
                 _ => return None,
             },
         };
+
+        if result == ""{
+            return None
+        }
 
         Some(format!("{} {}", module_data.prefix, result))
     }
