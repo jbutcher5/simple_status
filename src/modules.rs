@@ -61,9 +61,11 @@ impl ModuleData {
 
         let module_data = &self.config.module[&module];
 
+        let potential_built_in: &str = module_data.built_in.as_ref().unwrap_or(&module);
+
         let result: Option<String> = match module_data.command {
             Some(_) => module_data.stdout(),
-            None => Some(match module.as_str() {
+            None => Some(match potential_built_in {
                 "cpu" => self.cpu(),
                 "mem" => self.memory_used(),
                 "uptime" => self.uptime_string(),
@@ -114,12 +116,7 @@ impl ModuleData {
             _ => "th",
         };
 
-        format!(
-            "{}{} {}",
-            day_num,
-            suffix,
-            local.format("%b %y").to_string()
-        )
+        format!("{}{} {}", day_num, suffix, local.format("%b %y"))
     }
 
     fn time(&self) -> String {
