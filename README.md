@@ -21,13 +21,11 @@ All dependencies are likely readily available in your repository.
 
 ## Config
 
-The default configuration can be found at `~/config.toml`.
+The default configuration can be found at `~/config.toml`. The config file must satisfy a `modules` and `seperator`.
 
 ### Modules
 
-Modules can either define a command to be executed and you the output as return value from the module or configure a built-in module.
-
-The config file must satisfy a `modules` and `seperator`.
+Modules can either define a command to be executed and you the output as return value from the module or configure a built-in module. If no `built_in` or `command` is defined the name of the module would be use as the `built_in`.
 
 ``` toml
 modules = ["clock"]
