@@ -1,7 +1,5 @@
 extern crate chrono;
 
-use home;
-
 use chrono::prelude::*;
 use rayon::prelude::*;
 use sysinfo::{ProcessorExt, System, SystemExt};
@@ -50,9 +48,9 @@ impl ModuleData {
     fn translate(&self, module: String) -> Option<String> {
         let module_data = &self.config.module[&module];
 
-        let result: String = match module_data.command {
+        let result: Option<String> = match module_data.command {
             Some(_) => module_data.stdout(),
-            None => match module.as_str() {
+            None => Some(match module.as_str() {
                 "cpu" => self.cpu(),
                 "mem" => self.memory_used(),
                 "uptime" => self.uptime_string(),
@@ -60,14 +58,14 @@ impl ModuleData {
                 "load" => self.load(),
                 "load_all" => self.load_all(),
                 _ => return None,
-            },
+            }),
         };
 
-        if result == ""{
-            return None
+        if result.is_none() || result.as_ref()?.is_empty() {
+            return None;
         }
 
-        Some(format!("{} {}", module_data.prefix, result))
+        Some(format!("{} {}", module_data.prefix, result?))
     }
 
     fn dynamic_refresh(&mut self) {
