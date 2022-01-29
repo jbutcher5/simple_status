@@ -49,6 +49,8 @@ impl ModuleData {
     }
 
     fn translate(&self, module: String) -> Option<String> {
+        // TODO: Check if module is denfined self.config.module keys.
+
         let module_data = &self.config.module[&module];
 
         let result: Option<String> = match module_data.command {
