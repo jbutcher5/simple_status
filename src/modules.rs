@@ -47,8 +47,7 @@ impl ModuleData {
             .iter()
             .fold(String::new(), |acc, x| {
                 format!("{} {} {}", acc, &self.config.seperator, x)
-            })
-            .to_string();
+            });
 
         if result.len() <= self.config.seperator.len() {
             return String::new();
