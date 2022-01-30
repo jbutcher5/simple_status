@@ -44,13 +44,14 @@ impl ModuleData {
             .collect();
 
         // Collect all results with a fold
-        clean_results
-            .iter()
-            .fold(String::new(), |acc, x| {
+        match clean_results.len() {
+            0 => String::new(),
+            _ => clean_results.iter().fold(String::new(), |acc, x| {
                 format!("{} {} {}", acc, &self.config.seperator, x)
-            })
-            .trim()
-            .to_string()
+            })[self.config.seperator.len() + 1..]
+                .trim()
+                .to_string(),
+        }
     }
 
     fn translate(&self, module: String) -> Option<String> {
