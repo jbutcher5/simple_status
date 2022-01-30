@@ -48,14 +48,13 @@ impl ModuleData {
             .fold(String::new(), |acc, x| {
                 format!("{} {} {}", acc, &self.config.seperator, x)
             })
-            .trim()
             .to_string();
 
         if result.len() <= self.config.seperator.len() {
             return String::new();
         }
 
-        result[self.config.seperator.len() + 1..].to_string()
+        result[self.config.seperator.len() + 1..].trim().to_string()
     }
 
     fn translate(&self, module: String) -> Option<String> {
