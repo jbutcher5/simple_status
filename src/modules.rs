@@ -43,14 +43,17 @@ impl ModuleData {
             .map(|x| x.unwrap())
             .collect();
 
-        // Collect all results with a fold
-        clean_results
+        let result = clean_results
             .iter()
             .fold(String::new(), |acc, x| {
                 format!("{} {} {}", acc, &self.config.seperator, x)
-            })
-            .trim()
-            .to_string()
+            });
+
+        if result.len() <= self.config.seperator.len() {
+            return String::new();
+        }
+
+        result[self.config.seperator.len() + 1..].trim().to_string()
     }
 
     fn translate(&self, module: String) -> Option<String> {
