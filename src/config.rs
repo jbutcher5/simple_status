@@ -2,6 +2,8 @@ use serde_derive::Deserialize;
 
 use std::{collections::HashMap, fs, path::PathBuf, process::Command};
 
+use crate::modules::ModuleData;
+
 #[derive(Deserialize, Clone, Debug)]
 pub struct Config {
     pub modules: Vec<String>,
@@ -17,6 +19,32 @@ pub struct Module {
 }
 
 impl Module {
+    pub fn get(&self, module_data: &ModuleData) -> Option<String> {
+
+        let result: Option<String> = match self.command {
+            Some(_) => self.stdout(),
+            None => Some(match self.built_in.as_ref().unwrap().as_str() {
+                "cpu" => module_data.cpu(),
+                "mem" => module_data.memory_used(),
+                "uptime" => module_data.uptime_string(),
+                "date" => module_data.date(),
+                "time" => module_data.time(),
+                "load" => module_data.load(),
+                "load_all" => module_data.load_all(),
+                _ => return None,
+            }),
+        };
+
+        if result.is_none() || result.as_ref()?.is_empty() {
+            return None;
+        }
+
+        match self.prefix {
+            Some(_) => Some(format!("{} {}", .prefix.as_ref()?, result?)),
+            _ => Some(result?),
+        }
+    }
+
     pub fn stdout(&self) -> Option<String> {
         let seperate = match self.command {
             Some(_) => self
