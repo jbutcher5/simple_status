@@ -1,24 +1,49 @@
 use serde_derive::Deserialize;
 
-use std::{collections::HashMap, fs, path::PathBuf, process::Command};
+use std::{fs, path::PathBuf, process::Command, time::Instant};
 
 use crate::modules::ModuleData;
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct Config {
-    pub modules: Vec<String>,
     pub seperator: String,
-    pub module: HashMap<String, Module>,
+    pub module: Vec<ConfigModule>,
 }
 
 #[derive(Deserialize, Clone, Debug)]
+pub struct ConfigModule {
+    pub command: Option<String>,
+    pub built_in: Option<String>,
+    pub prefix: Option<String>,
+    pub delay: Option<u128>
+}
+
+#[derive(Clone)]
 pub struct Module {
     pub command: Option<String>,
     pub built_in: Option<String>,
     pub prefix: Option<String>,
+    pub delay: Option<u128>,
+    pub last_update: u128
+}
+
+impl Config {
+    pub fn get_modules(&self) -> Vec<Module> {
+        self.module.iter().map(|x| Module::new(x.clone())).collect()
+    }
 }
 
 impl Module {
+    pub fn new(module: ConfigModule) -> Self{
+        Self {
+            command: module.command,
+            built_in: module.built_in,
+            prefix: module.prefix,
+            delay: module.delay,
+            last_update: 0
+        }
+    }
+
     pub fn get(&self, module_data: &ModuleData) -> Option<String> {
 
         let result: Option<String> = match self.command {
@@ -40,7 +65,7 @@ impl Module {
         }
 
         match self.prefix {
-            Some(_) => Some(format!("{} {}", .prefix.as_ref()?, result?)),
+            Some(_) => Some(format!("{} {}", self.prefix.as_ref()?, result?)),
             _ => Some(result?),
         }
     }
