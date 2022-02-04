@@ -5,7 +5,7 @@ use rayon::prelude::*;
 use std::time::Instant;
 use sysinfo::{ProcessorExt, System, SystemExt};
 
-use crate::config::{Config, StatusConfig, Module};
+use crate::config::{StatusConfig, Module};
 
 pub struct ModuleData {
     sys: System,
@@ -48,7 +48,7 @@ impl ModuleData {
                             let mut new_module = x.0.clone();
                             new_module.last_update = now;
 
-                            return (x.0.get(self), new_module)
+                            (x.0.get(self), new_module)
                         },
                         _ => (x.1.clone(), x.0.clone())
                     }
