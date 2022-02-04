@@ -15,7 +15,7 @@ pub struct ConfigModule {
     pub command: Option<String>,
     pub built_in: Option<String>,
     pub prefix: Option<String>,
-    pub delay: Option<u128>
+    pub delay: Option<u64>
 }
 
 #[derive(Clone)]
@@ -23,7 +23,7 @@ pub struct Module {
     pub command: Option<String>,
     pub built_in: Option<String>,
     pub prefix: Option<String>,
-    pub delay: Option<u128>,
+    pub delay: u128,
     pub last_update: u128
 }
 
@@ -39,7 +39,7 @@ impl Module {
             command: module.command,
             built_in: module.built_in,
             prefix: module.prefix,
-            delay: module.delay,
+            delay: module.delay.unwrap_or(500).into(),
             last_update: 0
         }
     }
