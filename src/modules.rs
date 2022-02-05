@@ -43,7 +43,7 @@ impl ModuleData {
                 .map(|x| -> (Option<String>, Module) {
                     let now = self.time_point.unwrap().elapsed().as_millis();
 
-                    match now >= x.0.delay + x.0.last_update {
+                    match now >= x.0.delay + x.0.last_update && x.0.update {
                         true => {
                             let mut new_module = x.0.clone();
                             new_module.last_update = now;

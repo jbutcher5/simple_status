@@ -57,14 +57,14 @@ fn args() -> ArgMatches {
                 .short('c')
                 .long("config")
                 .takes_value(true)
-                .help("Path to the configuration file")
+                .help("Path to the configuration file"),
         )
         .arg(
             Arg::new("DELAY")
                 .short('d')
                 .long("delay")
                 .takes_value(true)
-                .help("Delay between bar updates (In milliseconds, defaults to 500ms)")
+                .help("Delay between bar updates (In milliseconds, defaults to 500ms)"),
         )
         .get_matches();
 }
