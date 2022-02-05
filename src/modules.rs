@@ -42,7 +42,7 @@ impl ModuleData {
                 .zip(self.bar.as_ref().unwrap())
                 .map(|x| -> (Option<String>, Module) {
                     let now = self.time_point.unwrap().elapsed().as_millis();
-                    let delay: u128 = x.0.config.delay.into();
+                    let delay: u128 = x.0.config.delay.unwrap().into();
                     let last_update: u128 = x.0.last_update;
                     let mut new_module = x.0.clone();
                     new_module.last_update = now;
