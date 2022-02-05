@@ -1,17 +1,24 @@
 use serde_derive::Deserialize;
-use derivative::Derivative;
 use std::{fs, path::PathBuf, process::Command};
 
 use crate::modules::ModuleData;
+
+const BASE_DELAY: u64 = 500;
+
+fn base_delay() -> u64 {
+    BASE_DELAY
+}
 
 fn _true() -> bool {
     true
 }
 
-#[derive(Derivative, Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Config {
     pub seperator: String,
     pub module: Vec<ConfigModule>,
+
+    #[serde(default = "base_delay")]
     pub default_delay: Option<u64>,
 }
 
@@ -20,9 +27,7 @@ pub struct ConfigModule {
     pub command: Option<String>,
     pub built_in: Option<String>,
     pub prefix: Option<String>,
-
-    #[serde(default)]
-    pub delay: u64,
+    pub delay: Option<u64>,
 
     #[serde(default = "_true")]
     pub update: bool,
@@ -34,20 +39,30 @@ pub struct Module {
     pub last_update: u128,
 }
 
-
 impl Config {
     pub fn get_modules(&self) -> Vec<Module> {
         self.module
             .iter()
-            .map(|x| Module::new(x.clone()))
+            .map(|x| Module::new(x.clone(), self))
             .collect()
     }
 }
 
 impl Module {
-    pub fn new(config: ConfigModule) -> Self {
+    pub fn new(module: ConfigModule, config: &Config) -> Self {
+        let mut new_module: ConfigModule = module;
+
+        match module.delay {
+            Some(_) => {
+                if module.built_in.is_some() && module.delay.unwrap() <= 500 {
+                    new_module.delay = Some(500);
+                }
+            }
+            None => new_module.delay = config.default_delay,
+        }
+
         Self {
-            config,
+            config: new_module,
             last_update: 0,
         }
     }
