@@ -1,10 +1,14 @@
 use serde_derive::Deserialize;
-
+use derivative::Derivative;
 use std::{fs, path::PathBuf, process::Command};
 
 use crate::modules::ModuleData;
 
-#[derive(Deserialize, Clone, Debug)]
+fn _true() -> bool {
+    true
+}
+
+#[derive(Derivative, Deserialize, Clone, Debug)]
 pub struct Config {
     pub seperator: String,
     pub module: Vec<ConfigModule>,
@@ -16,45 +20,42 @@ pub struct ConfigModule {
     pub command: Option<String>,
     pub built_in: Option<String>,
     pub prefix: Option<String>,
-    pub delay: Option<u64>,
-    pub update: Option<bool>,
+
+    #[serde(default)]
+    pub delay: u64,
+
+    #[serde(default = "_true")]
+    pub update: bool,
 }
 
 #[derive(Clone)]
 pub struct Module {
-    pub command: Option<String>,
-    pub built_in: Option<String>,
-    pub prefix: Option<String>,
-    pub delay: u128,
+    pub config: ConfigModule,
     pub last_update: u128,
-    pub update: bool,
 }
+
 
 impl Config {
     pub fn get_modules(&self) -> Vec<Module> {
         self.module
             .iter()
-            .map(|x| Module::new(x.clone(), self.default_delay.unwrap_or(500)))
+            .map(|x| Module::new(x.clone()))
             .collect()
     }
 }
 
 impl Module {
-    pub fn new(module: ConfigModule, default_delay: u64) -> Self {
+    pub fn new(config: ConfigModule) -> Self {
         Self {
-            command: module.command,
-            built_in: module.built_in,
-            prefix: module.prefix,
-            delay: module.delay.unwrap_or(default_delay).into(),
+            config,
             last_update: 0,
-            update: module.update.unwrap_or(true),
         }
     }
 
     pub fn get(&self, module_data: &ModuleData) -> Option<String> {
-        let result: Option<String> = match self.command {
+        let result: Option<String> = match self.config.command {
             Some(_) => self.stdout(),
-            None => Some(match self.built_in.as_ref().unwrap().as_str() {
+            None => Some(match self.config.built_in.as_ref().unwrap().as_str() {
                 "cpu" => module_data.cpu(),
                 "mem" => module_data.memory_used(),
                 "uptime" => module_data.uptime_string(),
@@ -70,28 +71,29 @@ impl Module {
             return None;
         }
 
-        match self.prefix {
-            Some(_) => Some(format!("{} {}", self.prefix.as_ref()?, result?)),
-            _ => Some(result?),
+        match self.config.prefix {
+            Some(_) => Some(format!("{} {}", self.config.prefix.as_ref()?, result?)),
+            None => Some(result?),
         }
     }
 
     pub fn stdout(&self) -> Option<String> {
-        let seperate = match self.command {
+        let seperate = match self.config.command {
             Some(_) => self
+                .config
                 .command
                 .as_ref()
                 .unwrap()
                 .split(' ')
                 .collect::<Vec<&str>>(),
-            _ => return None,
+            None => return None,
         };
 
         let command = Command::new(seperate[0]).args(&seperate[1..]).output();
 
         let stdout = match command {
             Ok(_) => command.unwrap().stdout,
-            _ => return None,
+            Err(_) => return None,
         };
 
         Some(

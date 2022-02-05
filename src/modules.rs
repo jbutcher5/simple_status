@@ -42,15 +42,16 @@ impl ModuleData {
                 .zip(self.bar.as_ref().unwrap())
                 .map(|x| -> (Option<String>, Module) {
                     let now = self.time_point.unwrap().elapsed().as_millis();
+                    let delay: u128 = x.0.config.delay.into();
+                    let last_update: u128 = x.0.last_update;
 
-                    match now >= x.0.delay + x.0.last_update && x.0.update {
-                        true => {
-                            let mut new_module = x.0.clone();
-                            new_module.last_update = now;
+                    if let true = now >= delay + last_update && x.0.config.update {
+                        let mut new_module = x.0.clone();
+                        new_module.last_update = now;
 
-                            (x.0.get(self), new_module)
-                        }
-                        _ => (x.1.clone(), x.0.clone()),
+                        (x.0.get(self), new_module)
+                    } else {
+                        (x.1.clone(), x.0.clone())
                     }
                 })
                 .collect();
@@ -98,8 +99,8 @@ impl ModuleData {
         let built_in: Vec<String> = self
             .modules
             .iter()
-            .filter(|x| x.built_in.is_some())
-            .map(|x| x.built_in.as_ref().unwrap().clone())
+            .filter(|x| x.config.built_in.is_some())
+            .map(|x| x.config.built_in.as_ref().unwrap().clone())
             .collect();
 
         let has = |x: &Vec<String>, y: &[&str]| x.iter().any(|z| y.contains(&z.as_str()));
