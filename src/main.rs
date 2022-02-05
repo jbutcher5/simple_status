@@ -18,13 +18,6 @@ fn main() {
         .value_of("CONFIG")
         .unwrap_or(".config/simple_status/config.toml");
 
-    let delay: u128 = args
-        .value_of("DELAY")
-        .unwrap_or("500")
-        .replace("ms", "")
-        .parse()
-        .unwrap_or(500);
-
     // Parse config into modules
     let mut module_data = ModuleData::new(config_path);
 
@@ -35,8 +28,7 @@ fn main() {
     let mut time_point: Option<Instant> = None;
 
     loop {
-        // Update status bar every 500 milliseconds
-        if time_point.is_none() || time_point.unwrap().elapsed().as_millis() >= delay {
+        if time_point.is_none() || time_point.unwrap().elapsed().as_millis() >= 500 {
             status_bar.set_status(module_data.get_bar());
             time_point = Some(Instant::now());
         }
@@ -58,13 +50,6 @@ fn args() -> ArgMatches {
                 .long("config")
                 .takes_value(true)
                 .help("Path to the configuration file"),
-        )
-        .arg(
-            Arg::new("DELAY")
-                .short('d')
-                .long("delay")
-                .takes_value(true)
-                .help("Delay between bar updates (In milliseconds, defaults to 500ms)"),
         )
         .get_matches();
 }
