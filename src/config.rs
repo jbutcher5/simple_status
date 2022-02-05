@@ -5,8 +5,8 @@ use crate::modules::ModuleData;
 
 const BASE_DELAY: u64 = 500;
 
-fn base_delay() -> u64 {
-    BASE_DELAY
+fn base_delay() -> Option<u64> {
+    Some(BASE_DELAY)
 }
 
 fn _true() -> bool {
@@ -50,7 +50,7 @@ impl Config {
 
 impl Module {
     pub fn new(module: ConfigModule, config: &Config) -> Self {
-        let mut new_module: ConfigModule = module;
+        let mut new_module: ConfigModule = module.clone();
 
         match module.delay {
             Some(_) => {
