@@ -5,14 +5,14 @@ use rayon::prelude::*;
 use std::time::Instant;
 use sysinfo::{ProcessorExt, System, SystemExt};
 
-use crate::config::{StatusConfig, Module};
+use crate::config::{Module, StatusConfig};
 
 pub struct ModuleData {
     sys: System,
     bar: Option<Vec<Option<String>>>,
     time_point: Option<Instant>,
     modules: Vec<Module>,
-    seperator: String
+    seperator: String,
 }
 
 impl ModuleData {
@@ -25,7 +25,7 @@ impl ModuleData {
             bar: None,
             time_point: None,
             modules: config.get_modules(),
-            seperator: config.seperator
+            seperator: config.seperator,
         }
     }
 
@@ -49,15 +49,20 @@ impl ModuleData {
                             new_module.last_update = now;
 
                             (x.0.get(self), new_module)
-                        },
-                        _ => (x.1.clone(), x.0.clone())
+                        }
+                        _ => (x.1.clone(), x.0.clone()),
                     }
                 })
                 .collect();
 
-            self.modules = result.iter().fold(vec![], |mut acc, x| {acc.push(x.1.clone()); acc});
-            result.iter().fold(vec![], |mut acc, x| {acc.push(x.0.clone()); acc})
-
+            self.modules = result.iter().fold(vec![], |mut acc, x| {
+                acc.push(x.1.clone());
+                acc
+            });
+            result.iter().fold(vec![], |mut acc, x| {
+                acc.push(x.0.clone());
+                acc
+            })
         } else {
             let result: Vec<Option<String>> = self
                 .modules

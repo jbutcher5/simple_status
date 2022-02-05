@@ -8,6 +8,7 @@ use crate::modules::ModuleData;
 pub struct Config {
     pub seperator: String,
     pub module: Vec<ConfigModule>,
+    pub default_delay: Option<u64>,
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -15,7 +16,7 @@ pub struct ConfigModule {
     pub command: Option<String>,
     pub built_in: Option<String>,
     pub prefix: Option<String>,
-    pub delay: Option<u64>
+    pub delay: Option<u64>,
 }
 
 #[derive(Clone)]
@@ -24,28 +25,30 @@ pub struct Module {
     pub built_in: Option<String>,
     pub prefix: Option<String>,
     pub delay: u128,
-    pub last_update: u128
+    pub last_update: u128,
 }
 
 impl Config {
     pub fn get_modules(&self) -> Vec<Module> {
-        self.module.iter().map(|x| Module::new(x.clone())).collect()
+        self.module
+            .iter()
+            .map(|x| Module::new(x.clone(), self.default_delay.unwrap_or(500)))
+            .collect()
     }
 }
 
 impl Module {
-    pub fn new(module: ConfigModule) -> Self{
+    pub fn new(module: ConfigModule, default_delay: u64) -> Self {
         Self {
             command: module.command,
             built_in: module.built_in,
             prefix: module.prefix,
-            delay: module.delay.unwrap_or(500).into(),
-            last_update: 0
+            delay: module.delay.unwrap_or(default_delay).into(),
+            last_update: 0,
         }
     }
 
     pub fn get(&self, module_data: &ModuleData) -> Option<String> {
-
         let result: Option<String> = match self.command {
             Some(_) => self.stdout(),
             None => Some(match self.built_in.as_ref().unwrap().as_str() {
