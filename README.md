@@ -21,20 +21,11 @@ All dependencies are likely readily available in your repository.
 
 ## Config
 
-The default configuration can be found at `~/config.toml`. The config file must satisfy a `modules` and `seperator`.
+The default configuration can be found at `~/config.toml`. The config file must satisfy a `seperator`. The `seperator` is the string injected between the module outputs, you could think of it as the spacer, or hence the name, a seperator.
 
 ### Modules
 
-Modules can either define a command to be executed and you the output as return value from the module or configure a built-in module. If no `built_in` or `command` is defined the name of the module would be use as the `built_in`.
-
-``` toml
-modules = ["clock"]
-seperator = "|"
-
-[module."clock"]
-prefix = "Time: "
-built_in = "time"
-```
+Modules can either define a command to be executed and you use the output as return value from the module or configure a built-in module. If no `built_in` or `command` the module will not display. The order in which modules are defined down the config file will map left to right on the bar. For example the first module defined will become the left-most module on the status bar and the last will become the righ-most.
 
 ### Built-in Modules
 
@@ -46,14 +37,22 @@ built_in = "time"
 - `load` Load as an average of the past minute
 - `load_all` Load average in the format `one five fifteen`
 
+``` toml
+seperator = "|"
+
+[[module]]
+prefix = "Time: "
+built_in = "time"
+```
+
 ### Command Modules
 
 To create a command module all that needs to be defined is a module with a command. A `built_in` should be defined, however the result would likely not result in an error and would be ignored.
 
 ``` toml
-modules = ["kernel"]
+seperator = "|"
 
-[modue."kernel"]
+[[module]]
 prefix = "Kernel: "
 command = "uname -r"
 ```
