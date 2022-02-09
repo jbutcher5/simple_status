@@ -27,6 +27,11 @@ The default configuration can be found at `~/config.toml`. The config file must 
 
 Modules can either define a command to be executed and you use the output as return value from the module or configure a built-in module. If no `built_in` or `command` the module will not display. The order in which modules are defined down the config file will map left to right on the bar. For example the first module defined will become the left-most module on the status bar and the last will become the righ-most.
 
+#### Optional Module Config
+
+- `update` Should the module update.
+- `delay` The delay in milliseconds between updates.
+
 ### Built-in Modules
 
 - `cpu` CPU usage as a percentage.
