@@ -3,10 +3,17 @@ seperator = " "
 [[module]]
 prefix = " "
 command = "uname -r"
+update = false
 
 [[module]]
 prefix = "華 "
 built_in = "load"
+delay = 900
+
+[[module]]
+prefix = " "
+built_in = "date"
+delay = 43200000
 
 [[module]]
 prefix = " "
