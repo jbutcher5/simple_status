@@ -17,7 +17,7 @@ All dependencies are likely readily available in your repository.
 ### Installation Process (Compile)
 
 1. Run `./install.sh`
-2. *Optional* - Move default config to the simple_status config directory: `mkdir -p ~/.config/simple_status && cp config.yaml ~/.config/simple_status`
+2. *Optional* - Move default config to the simple_status config directory: `mkdir -p ~/.config/simple_status && cp config.toml ~/.config/simple_status`
 
 ## Config
 
