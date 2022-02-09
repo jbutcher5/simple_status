@@ -1,21 +1,25 @@
-modules = ["kernel", "load", "time", "uptime", "cpu", "mem"]
 seperator = " "
 
-[module."kernel"]
+[[module]]
 prefix = " "
 command = "uname -r"
 
-[module."load"]
+[[module]]
 prefix = "華 "
+built_in = "load"
 
-[module."time"]
+[[module]]
 prefix = " "
+built_in = "time"
 
-[module."uptime"]
+[[module]]
 prefix = " "
+built_in = "uptime"
 
-[module."cpu"]
+[[module]]
 prefix = " "
+built_in = "cpu"
 
-[module."mem"]
+[[module]]
 prefix = " "
+built_in = "mem"
