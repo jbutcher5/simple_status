@@ -1,5 +1,7 @@
 # Simple Status
 
+![simple_status2](https://user-images.githubusercontent.com/36408549/154275556-006f7559-f567-4326-9b24-145f68cc009c.png)
+
 Easy, Simple, Clean. Making status bars reliable and up-to-date. This project was inspired by [dwmblocks](https://github.com/torrinfail/dwmblocks) but is a Rust alternative with a toml configuration file.
 
 ## Installation
