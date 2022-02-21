@@ -127,7 +127,8 @@ impl ModuleData {
             Some('1') => "st",
             Some('2') => "nd",
             Some('3') => "rd",
-            _ => "th",
+            Some(_) => "th",
+            _ => "",
         };
 
         format!("{}{} {}", day_num, suffix, local.format("%b %y"))
