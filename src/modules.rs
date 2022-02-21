@@ -123,10 +123,10 @@ impl ModuleData {
         let local = Local::now();
 
         let day_num = local.format("%d").to_string();
-        let suffix = match day_num.as_str() {
-            "1" => "st",
-            "2" => "nd",
-            "3" => "rd",
+        let suffix = match day_num.chars().last() {
+            Some('1') => "st",
+            Some('2') => "nd",
+            Some('3') => "rd",
             _ => "th",
         };
 
