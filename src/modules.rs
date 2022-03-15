@@ -70,11 +70,12 @@ impl ModuleData {
                 .map(|x| -> Option<String> { x.get(self) })
                 .collect();
 
-            self.bar = Some(result.clone());
             self.time_point = Some(Instant::now());
 
             result
         };
+
+        self.bar = Some(results.clone());
 
         let clean_results: Vec<String> = results
             .iter()
