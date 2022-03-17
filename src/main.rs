@@ -42,7 +42,7 @@ fn args() -> ArgMatches {
     // Build Argument App with clap
     return App::new("simple_status")
         .version(env!("CARGO_PKG_VERSION"))
-        .author("James Butcher <jamesbutcher167@gmail.com>")
+        .author("James Butcher <jamesbutcher@duck.com>")
         .about("Easy, Simple, Clean. A dwm modular config bar. Inspired by dwmblocks.")
         .arg(
             Arg::new("CONFIG")
